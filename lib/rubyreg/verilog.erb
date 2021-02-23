@@ -3,45 +3,68 @@ module mymod(
 	input              rst_l, 
 	input              clk, 
 	input              enable, 
+	input              sw_rst, 
 
 	// Register control
 	input              reg_wr,
-	input              reg_rd,
-	input        [7:0] reg_addr,
+	input              reg_rd_a,
+	input              reg_rd_b,
+	input        [7:0] reg_rd_addr_a,
+	input        [7:0] reg_rd_addr_b,
+	input        [7:0] reg_wr_addr,
 	input        [7:0] reg_wdat,
 	input        [7:0] reg_mask,
-	output logic [7:0] reg_rdat
+	output reg   [7:0] reg_rdat_a,
+	output reg   [7:0] reg_rdat_b,
 	<% get_inputs.each do |input| %>
-	<%= input %>,	<% end %>
+	<%= input %>	<% end %>
 	<% get_outputs.each do |output| %>
-	<%= output %>,	<% end %>
-)
+	<%= output %>	<% end %>
+);
 
-// Read Decode
+// Read Decode A
 always @(*) begin
-	reg_rdat_nxt = 0;
-	switch(reg_addr) <% @rm.registers.each do |reg| %>
-		case(<%=reg.addr%>) begin <% get_read_mux(reg).each do |addr_deco|%>
-			<%=addr_deco%>; <% end %> <% end %>
-		end
-		otherwise begin
-			reg_rdat_nxt = 0;
-		end
-	endcase
+	reg_rdat_a = 0;
+	if (reg_rd_a) begin
+		case(reg_rd_addr_a) <% @rm.registers.each do |reg| %>
+			<%=reg.addr%>: begin <% get_read_mux(reg).each do |addr_deco|%>
+				reg_rdat_a <%=addr_deco%>; <% end %> 
+			end<% end %>
+			default: begin
+				reg_rdat_a = 0;
+			end
+		endcase
+	end
+end
+
+// Read Decode B
+always @(*) begin
+	reg_rdat_b = 0;
+	if (reg_rd_b) begin
+		case(reg_rd_addr_b) <% @rm.registers.each do |reg| %>
+			<%=reg.addr%>: begin <% get_read_mux(reg).each do |addr_deco|%>
+				reg_rdat_b <%=addr_deco%>; <% end %> 
+			end<% end %>
+			default: begin
+				reg_rdat_b = 0;
+			end
+		endcase
+	end
 end
 
 // Address write decode logic
 <% get_address_en.each do |addr| %>
 <%= addr %>;	<% end %>
 
-// Register definition <% get_output_reg("reg").each do |reg| %>
+// Field next state logic
+<% get_output_reg("wire").each do |reg| %>
 <%= reg %>;	<% end %>
 
 // Registers
 always@(posedge clk or negedge rst_l) begin
 	if (!rst_l) begin <% get_output_reg("reset").each do |reg| %>
 		<%= reg %>;	<% end %>
-	end elseif (enable) <% get_output_reg("active").each do |reg| %>
+	end else if (enable) begin<% get_output_reg("active").each do |reg| %>
 		<%= reg %>;	<% end %>
 	end
 

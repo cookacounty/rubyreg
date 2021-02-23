@@ -2,6 +2,8 @@
 
 def load_excel(fname)
 
+	puts "Loading Excel #{fname}"
+
 	xlsx = Roo::Spreadsheet.open(fname)
 	#puts xlsx.info
 	# => Returns basic info about the spreadsheet file
@@ -9,7 +11,7 @@ def load_excel(fname)
 
     xlsx.default_sheet = xlsx.sheets.first
     header = xlsx.row(1)
-    puts header[0]
+    puts header[0] if $options[:verbose]
     
     (2..xlsx.last_row).each do |i|
       next unless xlsx.row(i)[0]
@@ -45,7 +47,7 @@ def parse_row(rm,row)
 
 	# Only add the row if its not ignored
 	if !$ignored_reg
-		puts "ROW: #{row.join(",")}"
+		puts "ROW: #{row.join(",")}" if $options[:verbose]
 		rm.addfield(name: headings["name"], assignment: headings["assignment"], type: headings["type"], initial_value: headings["initial_value"])
 	end
 end

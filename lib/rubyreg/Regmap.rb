@@ -24,13 +24,13 @@ class Regmap
 		nr = Register.new(rm:self,name:name,addr:addr)
 		@current_reg = nr
 		@registers.append(nr)
-		puts nr
+		puts nr if $options[:verbose]
 	end
 	def addfield(name: "", assignment: 0, type: "", initial_value: 0)
 		if !["reserved"].member?(type)
 			nf = RegisterField.new(register: @current_reg,name: name,assignment: assignment,type: type,initial_value: initial_value)
 			@current_reg.addfield(nf)
-			puts nf
+			puts nf if $options[:verbose]
 		end
 	end
 
@@ -115,6 +115,13 @@ class RegisterField
 			idx = "#{self.msb}:#{self.lsb}"
 		else 
 			idx = "#{self.msb}"
+		end
+	end
+	def get_inst_str()
+		if @width > 1
+			str = "[#{@width-1}:0]"
+		else
+			str = ""
 		end
 	end
 
