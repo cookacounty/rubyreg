@@ -11,34 +11,44 @@ module mymod(
 	input        [7:0] reg_wdat,
 	input        [7:0] reg_mask,
 	output logic [7:0] reg_rdat
-
-
 	<% get_inputs.each do |input| %>
 	<%= input %>,	<% end %>
 	<% get_outputs.each do |output| %>
 	<%= output %>,	<% end %>
 )
 
+// Read Decode
+always @(*) begin
+	reg_rdat_nxt = 0;
+	switch(reg_addr) <% @rm.registers.each do |reg| %>
+		case(<%=reg.addr%>) begin <% get_read_mux(reg).each do |addr_deco|%>
+			<%=addr_deco%>; <% end %> <% end %>
+		end
+		otherwise begin
+			reg_rdat_nxt = 0;
+		end
+	endcase
+end
 
-// Address decode logic
+// Address write decode logic
 <% get_address_en.each do |addr| %>
 <%= addr %>;	<% end %>
 
+// Register definition <% get_output_reg("reg").each do |reg| %>
+<%= reg %>;	<% end %>
+
 // Registers
 always@(posedge clk or negedge rst_l) begin
-	if (!rst_l) begin
-		<% get_output_reg("reset").each do |reg| %>
+	if (!rst_l) begin <% get_output_reg("reset").each do |reg| %>
 		<%= reg %>;	<% end %>
-	end elseif (!enable)
-		<% get_output_reg("idle").each do |reg| %>
-		<%= reg %>;	<% end %>
-	end else begin
-		<% get_output_reg("active").each do |reg| %>
+	end elseif (enable) <% get_output_reg("active").each do |reg| %>
 		<%= reg %>;	<% end %>
 	end
 
 
 end
+
+
 
 
 
