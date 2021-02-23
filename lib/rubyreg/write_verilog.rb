@@ -49,7 +49,10 @@ class RenderVerilog
 		@rm.registers.each do |reg|
 			reg.fields.each do |field|
 				if ["w1trg","rw"].member?(field.type)
+					idx = field.get_idx_str
 					case type
+						when "reg"
+							str = "reg [#{idx}] #{field.name}"
 						when "reset"
 							str    = "#{field.name} <= #{field.initial_value}"
 						when "idle"
@@ -57,21 +60,15 @@ class RenderVerilog
 						when "active"
 							# mask is a 2-1 mux
 							# 	old_data & !sel | new_data & sel
-							wrdata = "wrdata[#{field.msb}]"              if field.width == 1 
-							wrdata = "wrdata[#{field.msb}:#{field.lsb}]" if field.width > 1
 
 							case field.type
 								when "rw"    then hold_value = field.name
 								when "w1trg" then hold_value = field.initial_value
 							end
 
-							mask_fun = "(reg_mask & #{wrdata}) | (reg_mask & ~#{field.name})"
-							case field.type
-								when "rw"
-									str    = "#{field.name} <= #{reg.name}_en ? #{mask_fun} : #{hold_value}"   
-								when "w1trg"
-									str    = "#{field.name} <= #{reg.name}_en ? #{mask_fun} : #{hold_value}"   
-							end
+							mask_fun = "(reg_mask[#{idx}] & reg_wdat[#{idx}]) | (~reg_mask[#{idx}] & #{field.name})"
+
+							str    = "#{field.name} <= #{reg.name}_en ? (#{mask_fun}) : #{hold_value}"   
 					end
 					output_list << str
 				end
@@ -80,10 +77,20 @@ class RenderVerilog
 		output_list
 	end
 
+	def get_read_mux(reg)
+		output_list = Array.new
+		reg.fields.each do |field|
+			idx = field.get_idx_str
+			str = "reg_rdat_nxt[#{idx}]=#{field.name}"
+			output_list << str
+		end
+		output_list
+	end
+
 	def get_address_en()
 		addr_list = Array.new
 		@rm.registers.each do |reg|
-			str = "assign #{reg.name}_en = (addr == #{reg.addr})"
+			str = "assign #{reg.name}_en = reg_wr && (addr == #{reg.addr})"
 			addr_list << str
 		end
 		addr_list

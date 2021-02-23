@@ -21,4 +21,6 @@ end
 puts "LOADING EXCEL"
 rm = load_excel('myregmap.xlsx')
 rv = RenderVerilog.new(rm)
-puts rv.render
+
+fout=File.open("out.v","w")
+fout.puts rv.render
