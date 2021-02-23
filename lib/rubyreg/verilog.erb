@@ -30,7 +30,7 @@ always @(*) begin
 	reg_rdat_a = 0;
 	case(reg_rd_addr_a) <% @rm.registers.each do |reg| %>
 		<%=reg.addr%>: begin <% get_read_mux(reg).each do |addr_deco|%>
-			reg_rdat_a<%=addr_deco%>; <% end %> 
+			reg_rdat_a<%=addr_deco%>;<% end %>
 		end<% end %>
 		default: begin
 			reg_rdat_a = 0;
@@ -43,7 +43,7 @@ always @(*) begin
 	reg_rdat_b = 0;
 	case(reg_rd_addr_b) <% @rm.registers.each do |reg| %>
 		<%=reg.addr%>: begin <% get_read_mux(reg).each do |addr_deco|%>
-			reg_rdat_b<%=addr_deco%>; <% end %> 
+			reg_rdat_b<%=addr_deco%>;<% end %>
 		end<% end %>
 		default: begin
 			reg_rdat_b = 0;
@@ -53,15 +53,15 @@ end
 
 // Address write decode logic
 <% get_address_en.each do |addr| %>
-<%= addr %>;	<% end %>
+<%= addr %>;<% end %>
 
 // Raw register logic
 <% get_registers("wire").each do |reg| %>
-<%= reg %>;	<% end %>
+<%= reg %>;<% end %>
 
 // Field next state logic
 <% get_outputs("wire").each do |reg| %>
-<%= reg %>;	<% end %>
+<%= reg %>;<% end %>
 
 // Registers
 always@(posedge clk or negedge rst_l) begin

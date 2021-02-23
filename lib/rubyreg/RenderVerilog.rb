@@ -17,19 +17,24 @@ class RenderVerilog
 		case type
 			when "port"
 				@rm.registers.each do |reg|
-					str = "output [#{reg.width-1}:0] reg_#{reg.addr_hex},"
+					str = "output [#{reg.width-1}:0] #{reg.get_name(:reg)},"
 					str_list << str
 				end
 			when "wire"
 				@rm.registers.each do |reg|
-					reg.fields.each do |field|
-						case field.type
-							when "ro" then fieldname = "#{field.name}"
-							else           fieldname = "r_#{field.name}"
+					str = "assign #{reg.get_name(:reg)} = {"
+					reg.bitfields.reverse.each do |bf| 
+						if bf
+							field = bf[:field]
+							str += (field.width > 1) ? "#{field.get_name(:reg)}[#{bf[:idx]}]," :
+							                           "#{field.get_name(:reg)},"
+						else 
+							str += "1'b0,"
 						end
-						str = "assign reg_#{reg.addr_hex}[#{field.get_idx_str}] = #{fieldname}"
-						str_list << str
 					end
+					str.chomp!(",")
+					str+="}"
+					str_list << str
 				end
 		end
 		str_list
@@ -40,11 +45,8 @@ class RenderVerilog
 		@rm.registers.each do |reg|
 			reg.fields.each do |field|
 				if field.type == "ro"
-					if field.width ==1
-						str = "input #{field.name},"
-					else
-						str = "input #{field.get_inst_str} #{field.name},"
-					end
+					str = (field.width==1)? "input #{field.get_name(:reg)}," :
+					                        "input #{field.get_inst_str} #{field.get_name(:reg)},"
 					str_list << str
 				end
 			end
@@ -60,28 +62,23 @@ class RenderVerilog
 					idx = field.get_idx_str
 					case type
 						when "port"
-							if field.width ==1
-								str = "output reg r_#{field.name},"
-							else
-								str = "output reg #{field.get_inst_str} r_#{field.name},"
-							end
+							str = (field.width ==1 ) ? "output reg #{field.get_name(:reg)}," :
+							                           "output reg #{field.get_inst_str} #{field.get_name(:reg)},"
 						when "reg"
-							str = "reg #{field.get_inst_str} r_#{field.name}"
+							str = "reg #{field.get_inst_str} #{field.get_name(:reg)}"
 						when "reset"
-							str = "r_#{field.name} <= #{field.initial_value}"
-						when "idle"
-							str = "r_#{field.name} <= #{field.name}"
+							str = "#{field.get_name(:reg)} <= #{field.initial_value}"
 						when "wire"
 							# mask is a 2-1 mux
 							# 	old_data & !sel | new_data & sel
 
 							case field.type
-								when "rw"    then hold_value = "r_#{field.name}"
+								when "rw"    then hold_value = "#{field.get_name(:reg)}"
 								when "w1trg" then hold_value = field.initial_value
 							end
-							str = "wire #{field.get_inst_str} #{field.name}_nxt = sw_rst ? #{field.initial_value} : #{reg.name}_en ? ((reg_mask[#{idx}] & reg_wdat[#{idx}]) | (~reg_mask[#{idx}] & r_#{field.name})) : #{hold_value}"
+							str = "wire #{field.get_inst_str} #{field.get_name(:next)} = sw_rst ? #{field.initial_value} : #{reg.name}_en ? ((reg_mask[#{idx}] & reg_wdat[#{idx}]) | (~reg_mask[#{idx}] & #{field.get_name(:reg)})) : #{hold_value}"
 						when "active"
-							str    = "r_#{field.name} <= #{field.name}_nxt"   
+							str    = "#{field.get_name(:reg)} <= #{field.get_name(:next)}"   
 					end
 					str_list << str
 				end
@@ -94,11 +91,7 @@ class RenderVerilog
 		str_list = Array.new
 		reg.fields.each do |field|
 			idx = field.get_idx_str
-			case field.type
-				when "ro" then str = "[#{idx}]= #{field.name}"
-				else           str = "[#{idx}]=r_#{field.name}"
-			end
-			
+			str = "[#{idx}]= #{field.get_name(:reg)}"
 			str_list << str
 		end
 		str_list

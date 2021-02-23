@@ -8,6 +8,8 @@ require_relative "rubyreg/Regmap"
 require 'erb'
 require 'roo'
 require 'optparse'
+require 'byebug'
+
 
 
 module Rubyreg

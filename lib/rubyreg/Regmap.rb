@@ -67,18 +67,21 @@ class Register
 	def addr_hex(places: 2)
 		sprintf("0x%0#{places}X", @addr) #=> "0A"
 	end
+	def get_name(type)
+		names = {reg: "reg_#{self.addr_hex}"}
+		names[type]		
+	end
 	def assign_bitfields
 		bitfields = Array.new(@width)
 		@fields.each do |field|
 			regidx = 0
 			(field.lsb..field.msb).each do |i|
 				raise "Bitfield already assigned in Register #{@addr} #{@name} Field #{field.name}" if bitfields[i]
-				bitfields[i] = "#{field.name}[#{regidx}]" if field.width > 1
-				bitfields[i] = "#{field.name}"            if field.width == 1
+				bitfields[i] = {field: field, idx: regidx}
 				regidx+=1
 			end
 		end
-		puts "Bitfield assignment: #{bitfields.inspect}" if $options[:verbose]
+		@bitfields = bitfields
 	end
 end
 
@@ -143,6 +146,13 @@ class RegisterField
 		else
 			str = ""
 		end
+	end
+	def get_name(type)
+		case (self.type)
+			when "ro" then names = {reg: "#{@name}",   next: "#{@name}_nxt"}
+			else           names = {reg: "r_#{@name}", next: "#{@name}_nxt"}
+		end
+		names[type]
 	end
 	def to_s
 		"\tRegister Field Name: #{@name} Type: #{@type} Assignment: #{@assignment} MSB: #{@msb} LSB: #{@lsb} Width: #{@width}"
