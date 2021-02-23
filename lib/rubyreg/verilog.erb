@@ -1,0 +1,45 @@
+module mymod(
+	// Main clock, enable, and reset
+	input              rst_l, 
+	input              clk, 
+	input              enable, 
+
+	// Register control
+	input              reg_wr,
+	input              reg_rd,
+	input        [7:0] reg_addr,
+	input        [7:0] reg_wdat,
+	input        [7:0] reg_mask,
+	output logic [7:0] reg_rdat
+
+
+	<% get_inputs.each do |input| %>
+	<%= input %>,	<% end %>
+	<% get_outputs.each do |output| %>
+	<%= output %>,	<% end %>
+)
+
+
+// Address decode logic
+<% get_address_en.each do |addr| %>
+<%= addr %>;	<% end %>
+
+// Registers
+always@(posedge clk or negedge rst_l) begin
+	if (!rst_l) begin
+		<% get_output_reg("reset").each do |reg| %>
+		<%= reg %>;	<% end %>
+	end elseif (!enable)
+		<% get_output_reg("idle").each do |reg| %>
+		<%= reg %>;	<% end %>
+	end else begin
+		<% get_output_reg("active").each do |reg| %>
+		<%= reg %>;	<% end %>
+	end
+
+
+end
+
+
+
+endmodule
