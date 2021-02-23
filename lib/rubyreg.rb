@@ -20,7 +20,7 @@ end
 
  
 def parse_opts(args)
-  options = {verbose: false, infile: 'myregmap.xlsx', outfile: 'out.v'}
+  options = {verbose: false, infile: 'myregmap.xlsx', outfile: 'out.v', modulename: 'regmap'}
   opts = OptionParser.new do |opts|
     # banner and separator are the usage description showed with '--help' or '-h'
     opts.banner = "Usage: rubyreg.rb [options] [output file]"
@@ -33,6 +33,10 @@ def parse_opts(args)
     opts.on("-o", "--outfile OUTFILE", "Path to output file") do |outfile|
       options[:outfile] = outfile
     end
+    opts.on("-m", "--module MODULENAME", "Name of the verilog module") do |modulename|
+      options[:modulename] = modulename
+    end
+
     opts.on("-v", "--verbose", "Verbose mode") do |v|
       options[:verbose] = v
     end

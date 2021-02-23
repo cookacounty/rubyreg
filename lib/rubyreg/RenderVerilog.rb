@@ -9,9 +9,34 @@ class RenderVerilog
 		@rm = rm
 	end
 
+	#str_list[-1].chomp!(',')
+	#str_list
+
+	def get_registers(type)
+		str_list = Array.new
+		case type
+			when "port"
+				@rm.registers.each do |reg|
+					str = "output [#{reg.width-1}:0] reg_#{reg.addr_hex},"
+					str_list << str
+				end
+			when "wire"
+				@rm.registers.each do |reg|
+					reg.fields.each do |field|
+						case field.type
+							when "ro" then fieldname = "#{field.name}"
+							else           fieldname = "r_#{field.name}"
+						end
+						str = "assign reg_#{reg.addr_hex}[#{field.get_idx_str}] = #{fieldname}"
+						str_list << str
+					end
+				end
+		end
+		str_list
+	end
 
 	def get_inputs
-		input_list = Array.new
+		str_list = Array.new
 		@rm.registers.each do |reg|
 			reg.fields.each do |field|
 				if field.type == "ro"
@@ -20,38 +45,26 @@ class RenderVerilog
 					else
 						str = "input #{field.get_inst_str} #{field.name},"
 					end
-					input_list << str
+					str_list << str
 				end
 			end
 		end
-		input_list
+		str_list
 	end
 
-	def get_outputs
-		output_list = Array.new
-		@rm.registers.each do |reg|
-			reg.fields.each do |field|
-				if ["w1trg","rw"].member?(field.type)
-					if field.width ==1
-						str = "output reg r_#{field.name},"
-					else
-						str = "output reg #{field.get_inst_str} r_#{field.name},"
-					end
-					output_list << str
-				end
-			end
-		end
-		output_list[-1].chomp!(',')
-		output_list
-	end
-
-	def get_output_reg(type)
-		output_list = Array.new
+	def get_outputs(type)
+		str_list = Array.new
 		@rm.registers.each do |reg|
 			reg.fields.each do |field|
 				if ["w1trg","rw"].member?(field.type)
 					idx = field.get_idx_str
 					case type
+						when "port"
+							if field.width ==1
+								str = "output reg r_#{field.name},"
+							else
+								str = "output reg #{field.get_inst_str} r_#{field.name},"
+							end
 						when "reg"
 							str = "reg #{field.get_inst_str} r_#{field.name}"
 						when "reset"
@@ -70,25 +83,25 @@ class RenderVerilog
 						when "active"
 							str    = "r_#{field.name} <= #{field.name}_nxt"   
 					end
-					output_list << str
+					str_list << str
 				end
 			end
 		end
-		output_list
+		str_list
 	end
 
 	def get_read_mux(reg)
-		output_list = Array.new
+		str_list = Array.new
 		reg.fields.each do |field|
 			idx = field.get_idx_str
 			case field.type
 				when "ro" then str = "[#{idx}]= #{field.name}"
-				else str = "[#{idx}]=r_#{field.name}"
+				else           str = "[#{idx}]=r_#{field.name}"
 			end
 			
-			output_list << str
+			str_list << str
 		end
-		output_list
+		str_list
 	end
 
 	def get_address_en()

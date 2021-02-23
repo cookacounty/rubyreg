@@ -28,6 +28,8 @@ def load_excel(fname)
     	parse_row(rm,row)
     end
 
+    rm.assign_bitfields
+
     rm
 
 end

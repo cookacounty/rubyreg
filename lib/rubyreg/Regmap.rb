@@ -1,5 +1,4 @@
 class Regmap
-	@addr_width
 	attr_accessor :registers
 	@current_addr
 	@current_reg
@@ -33,6 +32,9 @@ class Regmap
 			puts nf if $options[:verbose]
 		end
 	end
+	def assign_bitfields
+		@registers.each {|reg| reg.assign_bitfields}
+	end
 
 end
 
@@ -41,11 +43,14 @@ class Register
 	attr_accessor :name
 	attr_accessor :fields
 	attr_accessor :rm
+	attr_accessor :width
+	attr_accessor :bitfields
 
 	def initialize(rm: [],name: "",addr: 0)
 		@rm=rm
 		@addr=addr
 		@fields = Array.new
+		@width = 8
 
 		name.strip!
 		name_sub = name.strip.gsub(" ","_")
@@ -59,7 +64,22 @@ class Register
 	def addfield(field)
 		@fields << field
 	end
-
+	def addr_hex(places: 2)
+		sprintf("0x%0#{places}X", @addr) #=> "0A"
+	end
+	def assign_bitfields
+		bitfields = Array.new(@width)
+		@fields.each do |field|
+			regidx = 0
+			(field.lsb..field.msb).each do |i|
+				raise "Bitfield already assigned in Register #{@addr} #{@name} Field #{field.name}" if bitfields[i]
+				bitfields[i] = "#{field.name}[#{regidx}]" if field.width > 1
+				bitfields[i] = "#{field.name}"            if field.width == 1
+				regidx+=1
+			end
+		end
+		puts "Bitfield assignment: #{bitfields.inspect}" if $options[:verbose]
+	end
 end
 
 class RegisterField
@@ -124,7 +144,6 @@ class RegisterField
 			str = ""
 		end
 	end
-
 	def to_s
 		"\tRegister Field Name: #{@name} Type: #{@type} Assignment: #{@assignment} MSB: #{@msb} LSB: #{@lsb} Width: #{@width}"
 	end
