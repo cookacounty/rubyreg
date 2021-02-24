@@ -2,13 +2,16 @@
 
 require_relative "rubyreg/version"
 require_relative "rubyreg/load_excel"
+require_relative "rubyreg/load_config"
 require_relative "rubyreg/RenderVerilog"
 require_relative "rubyreg/Regmap"
+require_relative "rubyreg/AutoWire"
 
 require 'erb'
 require 'roo'
 require 'optparse'
 require 'byebug'
+require 'fileutils'
 
 
 
@@ -18,11 +21,8 @@ module Rubyreg
 end
 
 
-# default options:
-
- 
 def parse_opts(args)
-  options = {verbose: false, infile: 'myregmap.xlsx', outfile: 'out.v', modulename: 'regmap'}
+  options = {verbose: false, infile: 'myregmap.xlsx', outfile: 'out.v', modulename: 'regmap', config: nil}
   opts = OptionParser.new do |opts|
     # banner and separator are the usage description showed with '--help' or '-h'
     opts.banner = "Usage: rubyreg.rb [options] [output file]"
@@ -38,7 +38,9 @@ def parse_opts(args)
     opts.on("-m", "--module MODULENAME", "Name of the verilog module") do |modulename|
       options[:modulename] = modulename
     end
-
+    opts.on("-c", "--config CONFIGFILE", "Path to configuration file") do |config|
+      options[:config] = config
+    end
     opts.on("-v", "--verbose", "Verbose mode") do |v|
       options[:verbose] = v
     end
@@ -58,8 +60,17 @@ $options = parse_opts(ARGV)
 puts "User Options"
 puts "\t#{$options.inspect}"
 
+load_config
+
+# Read the Excel
 rm = load_excel($options[:infile])
 rv = RenderVerilog.new(rm)
 
-fout=File.open($options[:outfile],"w")
-fout.puts rv.render
+# Render the register map
+FileUtils.rm($options[:outfile], force: true)
+File.open($options[:outfile],"w").puts rv.render
+FileUtils.chmod("ugo-w",$options[:outfile])
+
+if $config.autowire_enable
+  AutoWire.new(rm)
+end

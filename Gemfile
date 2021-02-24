@@ -15,3 +15,5 @@ gem "roo", "~> 2.8.3"
 #gem "sequel", "~> 5.41.0"
 
 gem "byebug", "~> 11.1", :groups => [:development, :test]
+
+gem "anyway_config", "~> 2.0.0"

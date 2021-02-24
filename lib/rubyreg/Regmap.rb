@@ -8,7 +8,8 @@ class Regmap
 		@registers = Array.new
 	end
 
-	def addreg(name: "",offset: nil)
+	def addreg(headings)
+		offset = headings[:regoffset]
 		if !offset
 			addr = @current_addr
 			@current_addr=@current_addr+1
@@ -16,11 +17,11 @@ class Regmap
 			# Check the address
 			addr = toint(offset)
 			if !addr
-				raise "Invalid address offset format #{name} #{offset}"
+				raise "Invalid address offset format #{headings[:regname]} #{offset}"
 			end
 			@current_addr = addr + 1
 		end
-		nr = Register.new(rm:self,name:name,addr:addr)
+		nr = Register.new(rm:self,addr:addr,headings: headings)
 		@current_reg = nr
 		@registers.append(nr)
 		puts nr if $options[:verbose]
@@ -45,13 +46,16 @@ class Register
 	attr_accessor :rm
 	attr_accessor :width
 	attr_accessor :bitfields
+	attr_accessor :type
 
-	def initialize(rm: [],name: "",addr: 0)
+	def initialize(rm: [], addr: 0, headings: [])
 		@rm=rm
 		@addr=addr
 		@fields = Array.new
-		@width = 8
+		@width = $config.register_width
+		@type = headings[:regtype]
 
+		name = headings[:regname]
 		name.strip!
 		name_sub = name.strip.gsub(" ","_")
 
@@ -95,6 +99,7 @@ class RegisterField
 	attr_accessor :width
 	attr_accessor :initial_value
 	attr_accessor :wr_enable
+	attr_accessor :destination
 
 	def initialize(register: nil, headings: nil)
 
@@ -104,15 +109,20 @@ class RegisterField
 		@initial_value = toint(headings[:initial_value])
 		@type = headings[:type]
 		@wr_enable = headings[:wr_enable]
+		@destination = headings[:destination]
 
-		get_indexes(assignment)
+		raise "Invalid register assignment Name #{@name} assignment #{@assignment} register #{@register.name}\n\t#{headings.inspect}" if !@assignment
+		get_indexes(@assignment) if @assignment
 
-		raise "Invalid register Name #{name} type #{type} #{register.name}\n\t#{headings.inspect}" if !check_type(@type)
-		@type = type.strip
+		raise "Invalid register Name #{name} type #{@type} #{@register.name}\n\t#{headings.inspect}" if !check_type(@type)
+		@type = @type.strip
 
-		raise "Invalid register initial value #{name} value #{@initial_value.inspect} #{register.name}\n\t#{headings.inspect}" if !@initial_value
+		# External registers are implemented as "ro"
+		@type = "ro" if @register.type == "external"
 
-		raise "Invalid register width #{name} width #{assignment.inspect} #{register.name}\n\t#{headings.inspect}" if @width < 1
+		raise "Invalid register initial value #{name} value #{@initial_value.inspect} #{@register.name}\n\t#{headings.inspect}" if !@initial_value
+		raise "Invalid register width #{name} width #{@assignment.inspect} register #{@register.name}\n\t#{headings.inspect}" if @width < 1
+		raise "Invalid register destination  #{name} destination #{@destination .inspect} register #{@register.name}\n\t#{headings.inspect}" if !["top",nil].member?(@destination)
 
 	end
 	def check_type(type)
@@ -153,8 +163,8 @@ class RegisterField
 	end
 	def get_name(type)
 		case (self.type)
-			when "ro" then names = {reg: "#{@name}",   next: "#{@name}_nxt"}
-			else           names = {reg: "r_#{@name}", next: "#{@name}_nxt"}
+			when "ro" then names = {reg: "#{@name}",   next: "#{@name}_nxt", autowire: "#{@name}"}
+			else           names = {reg: "r_#{@name}", next: "#{@name}_nxt", autowire: "#{@name}"}
 		end
 		names[type]
 	end

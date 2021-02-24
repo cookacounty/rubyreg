@@ -5,7 +5,7 @@ class RenderVerilog
 	attr_reader :template, :rm
 
 	def initialize(rm)
-		@template = File.read(__dir__+'/verilog.erb')
+		@template = __dir__+'/verilog.erb'
 		@rm = rm
 	end
 
@@ -78,7 +78,7 @@ class RenderVerilog
 							end
 							enable_str = field.wr_enable ? "(#{reg.name}_en && #{field.wr_enable})" :
 							                               "#{reg.name}_en"
-							str = "wire #{field.get_inst_str} #{field.get_name(:next)} = sw_rst ? #{field.initial_value} : #{enable_str} ? ((reg_mask[#{idx}] & reg_wdat[#{idx}]) | (~reg_mask[#{idx}] & #{field.get_name(:reg)})) : #{hold_value}"
+							str = "wire #{field.get_inst_str} #{field.get_name(:next)} = sw_rst ? #{field.initial_value} : #{enable_str} ? ((~reg_mask[#{idx}] & reg_wdat[#{idx}]) | (reg_mask[#{idx}] & #{field.get_name(:reg)})) : #{hold_value}"
 						when "active"
 							str    = "#{field.get_name(:reg)} <= #{field.get_name(:next)}"   
 					end
@@ -109,6 +109,6 @@ class RenderVerilog
 	end
 	
 	def render
-		ERB.new(template).result(binding)
+		ERB.new(File.read(@template)).result(binding)
 	end
 end
