@@ -76,7 +76,9 @@ class RenderVerilog
 								when "rw"    then hold_value = "#{field.get_name(:reg)}"
 								when "w1trg" then hold_value = field.initial_value
 							end
-							str = "wire #{field.get_inst_str} #{field.get_name(:next)} = sw_rst ? #{field.initial_value} : #{reg.name}_en ? ((reg_mask[#{idx}] & reg_wdat[#{idx}]) | (~reg_mask[#{idx}] & #{field.get_name(:reg)})) : #{hold_value}"
+							enable_str = field.wr_enable ? "(#{reg.name}_en && #{field.wr_enable})" :
+							                               "#{reg.name}_en"
+							str = "wire #{field.get_inst_str} #{field.get_name(:next)} = sw_rst ? #{field.initial_value} : #{enable_str} ? ((reg_mask[#{idx}] & reg_wdat[#{idx}]) | (~reg_mask[#{idx}] & #{field.get_name(:reg)})) : #{hold_value}"
 						when "active"
 							str    = "#{field.get_name(:reg)} <= #{field.get_name(:next)}"   
 					end

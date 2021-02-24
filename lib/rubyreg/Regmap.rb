@@ -25,9 +25,9 @@ class Regmap
 		@registers.append(nr)
 		puts nr if $options[:verbose]
 	end
-	def addfield(name: "", assignment: 0, type: "", initial_value: 0)
-		if !["reserved"].member?(type)
-			nf = RegisterField.new(register: @current_reg,name: name,assignment: assignment,type: type,initial_value: initial_value)
+	def addfield(headings)
+		if !["reserved"].member?(headings[:type])
+			nf = RegisterField.new(register: @current_reg, headings: headings)
 			@current_reg.addfield(nf)
 			puts nf if $options[:verbose]
 		end
@@ -94,21 +94,25 @@ class RegisterField
 	attr_accessor :lsb
 	attr_accessor :width
 	attr_accessor :initial_value
+	attr_accessor :wr_enable
 
-	def initialize(register: [],name: "",assignment: -1, type: "", initial_value: 0)
+	def initialize(register: nil, headings: nil)
+
 		@register=register
-		@name = name
-		@assignment = assignment
-		@initial_value = toint(initial_value)
+		@name = headings[:name]
+		@assignment = headings[:assignment]
+		@initial_value = toint(headings[:initial_value])
+		@type = headings[:type]
+		@wr_enable = headings[:wr_enable]
 
 		get_indexes(assignment)
 
-		raise "Invalid register Name #{name} type #{type} #{register.name}" if !check_type(type)
+		raise "Invalid register Name #{name} type #{type} #{register.name}\n\t#{headings.inspect}" if !check_type(@type)
 		@type = type.strip
 
-		raise "Invalid register initial value #{name} value #{initial_value.inspect} #{register.name}" if !initial_value
+		raise "Invalid register initial value #{name} value #{@initial_value.inspect} #{register.name}\n\t#{headings.inspect}" if !@initial_value
 
-		raise "Invalid register width #{name} width #{assignment.inspect} #{register.name}" if @width < 1
+		raise "Invalid register width #{name} width #{assignment.inspect} #{register.name}\n\t#{headings.inspect}" if @width < 1
 
 	end
 	def check_type(type)

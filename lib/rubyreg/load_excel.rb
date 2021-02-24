@@ -36,20 +36,20 @@ end
 
 
 def parse_row(rm,row)
-	headings = {"regname"=>row[0],"regoffset"=>row[1],"regtype"=>row[2],"name"=>row[3],"assignment"=>row[4],"type"=>row[5],"initial_value"=>row[6]}
+	headings = {regname: row[0], regoffset: row[1],regtype: row[2], name:row[3],assignment: row[4],type: row[5],initial_value: row[6],description: row[7],wr_enable: row[8]}
 
-	if headings["regname"]
-		if ["reserved","external"].member?(headings["regtype"])
+	if headings[:regname]
+		if ["reserved","external"].member?(headings[:regtype])
 			$ignored_reg = true
 		else
 			$ignored_reg = false
-			rm.addreg(name: headings["regname"],offset: headings["regoffset"])
+			rm.addreg(name: headings[:regname],offset: headings[:regoffset])
 		end		
 	end
 
 	# Only add the row if its not ignored
 	if !$ignored_reg
 		puts "ROW: #{row.join(",")}" if $options[:verbose]
-		rm.addfield(name: headings["name"], assignment: headings["assignment"], type: headings["type"], initial_value: headings["initial_value"])
+		rm.addfield(headings)
 	end
 end

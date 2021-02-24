@@ -11,4 +11,7 @@ gem "rubocop", "~> 1.7"
 
 gem "roo", "~> 2.8.3"
 
+
 #gem "sequel", "~> 5.41.0"
+
+gem "byebug", "~> 11.1", :groups => [:development, :test]
