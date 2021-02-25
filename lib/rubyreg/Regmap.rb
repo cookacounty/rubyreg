@@ -1,11 +1,12 @@
 class Regmap
-	attr_accessor :registers
+	attr_accessor :registers, :xlsx
 	@current_addr
 	@current_reg
 
-	def initialize
+	def initialize(xlsx)
 		@current_addr = 0
 		@registers = Array.new
+		@xlsx = xlsx
 	end
 
 	def addreg(headings)
@@ -122,7 +123,7 @@ class RegisterField
 
 		raise "Invalid register initial value #{name} value #{@initial_value.inspect} #{@register.name}\n\t#{headings.inspect}" if !@initial_value
 		raise "Invalid register width #{name} width #{@assignment.inspect} register #{@register.name}\n\t#{headings.inspect}" if @width < 1
-		raise "Invalid register destination  #{name} destination #{@destination .inspect} register #{@register.name}\n\t#{headings.inspect}" if !["top",nil].member?(@destination)
+		#raise "Invalid register destination  #{name} destination #{@destination .inspect} register #{@register.name}\n\t#{headings.inspect}" if !["top",nil].member?(@destination)
 
 	end
 	def check_type(type)

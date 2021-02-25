@@ -66,6 +66,12 @@ load_config
 rm = load_excel($options[:infile])
 rv = RenderVerilog.new(rm)
 
+
+ps = rm.xlsx.sheet(0).parse
+
+File.open($options[:infile]+".csv","w") {|f| ps.each {|col| f.puts col.inspect}}
+ps = ps.map{|row| row.map {|col| d = col ? col : ""}}
+
 # Render the register map
 FileUtils.rm($options[:outfile], force: true)
 File.open($options[:outfile],"w").puts rv.render

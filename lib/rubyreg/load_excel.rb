@@ -21,7 +21,7 @@ def load_excel(fname)
     p = sheet.parse()
     #puts p.inspect
 
-    rm = Regmap.new
+    rm = Regmap.new(xlsx)
 
     $ignored_reg = false
     p.each do |row|

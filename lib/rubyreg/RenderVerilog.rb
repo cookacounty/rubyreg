@@ -17,7 +17,7 @@ class RenderVerilog
 		case type
 			when "port"
 				@rm.registers.each do |reg|
-					str = "output [#{reg.width-1}:0] #{reg.get_name(:reg)},"
+					str = "output [#{reg.width-1}:0] #{reg.get_name(:reg)}"
 					str_list << str
 				end
 			when "wire"
@@ -45,8 +45,8 @@ class RenderVerilog
 		@rm.registers.each do |reg|
 			reg.fields.each do |field|
 				if field.type == "ro"
-					str = (field.width==1)? "input #{field.get_name(:reg)}," :
-					                        "input #{field.get_inst_str} #{field.get_name(:reg)},"
+					str = (field.width==1)? "input #{field.get_name(:reg)}" :
+					                        "input #{field.get_inst_str} #{field.get_name(:reg)}"
 					str_list << str
 				end
 			end
@@ -62,8 +62,8 @@ class RenderVerilog
 					idx = field.get_idx_str
 					case type
 						when "port"
-							str = (field.width ==1 ) ? "output reg #{field.get_name(:reg)}," :
-							                           "output reg #{field.get_inst_str} #{field.get_name(:reg)},"
+							str = (field.width ==1 ) ? "output reg #{field.get_name(:reg)}" :
+							                           "output reg #{field.get_inst_str} #{field.get_name(:reg)}"
 						when "reg"
 							str = "reg #{field.get_inst_str} #{field.get_name(:reg)}"
 						when "reset"

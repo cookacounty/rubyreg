@@ -13,15 +13,14 @@ module <%= $options[:modulename] %>(
 	input        [7:0] reg_wdat,
 	input        [7:0] reg_mask,
 	output reg   [7:0] reg_rdat_a,
-	output reg   [7:0] reg_rdat_b,
+	output reg   [7:0] reg_rdat_b
 	<% get_inputs.each do |input| %>
-	<%= input %><% end %>
+	,<%= input %><% end %>
 	<% get_outputs("port").each do |output| %>
-	<%= output %><% end %>
+	,<%= output %><% end %>
 	<% get_registers("port").each do |reg| %>
-	<%= reg %><% end %>
+	,<%= reg %><% end %>
 
-	output placeholder // A fix for the last comma
 
 );
 
