@@ -18,15 +18,20 @@ cd example
 make regs
 ```
 
-# Supported Register Types
+## Supported Register Types
 * external/reserved
 * reg_port - generates a port with the full undecoded register value
 * 
-# Supported Field Types
+## Supported Field Types
 * ro - Read Only - creates input ports for the register fields that go directly to the read mux (no physical register)
 * rw - Read/Write - Creates a register and associated output port
 * w1trig - Write 1 to trigger - Creates a single clock trigger when a 1 is written to the field
 
-# Special columes
+## Special columes
 * write enable - The value here is ANDED with the register write enable for the field.
+
+# Also see
+RubyReg was inspired by another tool "Rggen", an open source tool that contains more advanced features
+
+https://github.com/rggen/rggen
 
