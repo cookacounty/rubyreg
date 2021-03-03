@@ -122,6 +122,7 @@ class RegisterField
 		@type = "ro" if @register.type == "external"
 
 		raise "Invalid register initial value #{name} value #{@initial_value.inspect} #{@register.name}\n\t#{headings.inspect}" if !@initial_value
+		raise "Initial value outside of range #{name} value #{@initial_value.inspect} #{@register.name}\n\t#{headings.inspect}" if !check_initial_value
 		raise "Invalid register width #{name} width #{@assignment.inspect} register #{@register.name}\n\t#{headings.inspect}" if @width < 1
 		#raise "Invalid register destination  #{name} destination #{@destination .inspect} register #{@register.name}\n\t#{headings.inspect}" if !["top",nil].member?(@destination)
 
@@ -130,8 +131,18 @@ class RegisterField
 		if type
 			["rw","ro","w1trg","reserved"].member?(type.strip)
 		else
-			false
+			nil
 		end
+	end
+	def check_initial_value()
+		# Check if the default value is representable by the WL
+		max_val = (2**@width)-1
+		if (@initial_value > max_val || @initial_value < 0)
+			nil
+		else
+			true
+		end
+
 	end
 	def get_indexes(assignment)
 		as = assignment.split(":")
@@ -186,8 +197,11 @@ def toint(myin)
 			intnum = myin
 		when String
 			myin.strip!
+			myin.gsub!("_","")
 			case myin
 				when /^0x[A-Fa-f0-9]+$/
+					intnum = Integer(myin)
+				when /^0b[01]+$/
 					intnum = Integer(myin)
 				when /^[0-9]$/
 					intnum = Integer(myin)

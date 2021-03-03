@@ -60,6 +60,7 @@ class RenderVerilog
 			reg.fields.each do |field|
 				if ["w1trg","rw"].member?(field.type)
 					idx = field.get_idx_str
+					initial_str = "#{field.width}'d#{field.initial_value}"
 					case type
 						when "port"
 							str = (field.width ==1 ) ? "output reg #{field.get_name(:reg)}" :
@@ -67,7 +68,7 @@ class RenderVerilog
 						when "reg"
 							str = "reg #{field.get_inst_str} #{field.get_name(:reg)}"
 						when "reset"
-							str = "#{field.get_name(:reg)} <= #{field.initial_value}"
+							str = "#{field.get_name(:reg)} <= #{initial_str}"
 						when "wire"
 							# mask is a 2-1 mux
 							# 	old_data & !sel | new_data & sel
@@ -78,7 +79,7 @@ class RenderVerilog
 							end
 							enable_str = field.wr_enable ? "(#{reg.name}_en && #{field.wr_enable})" :
 							                               "#{reg.name}_en"
-							str = "wire #{field.get_inst_str} #{field.get_name(:next)} = sw_rst ? #{field.initial_value} : #{enable_str} ? ((~reg_mask[#{idx}] & reg_wdat[#{idx}]) | (reg_mask[#{idx}] & #{field.get_name(:reg)})) : #{hold_value}"
+							str = "wire #{field.get_inst_str} #{field.get_name(:next)} = sw_rst ? #{initial_str} : #{enable_str} ? ((~reg_mask[#{idx}] & reg_wdat[#{idx}]) | (reg_mask[#{idx}] & #{field.get_name(:reg)})) : #{hold_value}"
 						when "active"
 							str    = "#{field.get_name(:reg)} <= #{field.get_name(:next)}"   
 					end
