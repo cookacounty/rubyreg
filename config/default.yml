@@ -1,3 +1,4 @@
 register_width: 8
 autowire_enable: false
 autowire_modules: []
+render_decoder: false

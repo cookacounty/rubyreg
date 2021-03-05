@@ -175,8 +175,8 @@ class RegisterField
 	end
 	def get_name(type)
 		case (self.type)
-			when "ro" then names = {reg: "#{@name}",   next: "#{@name}_nxt", autowire: "#{@name}"}
-			else           names = {reg: "r_#{@name}", next: "#{@name}_nxt", autowire: "#{@name}"}
+			when "ro" then names = {reg: "#{@name}",   next: "#{@name}_nxt", autowire: "#{@name}", decoder: "#{@name}"}
+			else           names = {reg: "r_#{@name}", next: "#{@name}_nxt", autowire: "#{@name}", decoder: "#{@name}"}
 		end
 		names[type]
 	end

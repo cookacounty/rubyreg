@@ -3,7 +3,7 @@
  Anyway::Settings.use_local_files = true
 
  class RubyRegCfg < Anyway::Config
-    attr_config :autowire_modules,:autowire_enable,:register_width
+    attr_config :autowire_modules,:autowire_enable,:register_width,:render_decoder
     config_name :rubyreg
 
 	describe_options(

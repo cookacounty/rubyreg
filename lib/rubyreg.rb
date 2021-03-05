@@ -6,6 +6,7 @@ require_relative "rubyreg/load_config"
 require_relative "rubyreg/RenderVerilog"
 require_relative "rubyreg/Regmap"
 require_relative "rubyreg/AutoWire"
+require_relative "rubyreg/RenderDecoder"
 
 require 'erb'
 require 'roo'
@@ -79,4 +80,7 @@ FileUtils.chmod("ugo-w",$options[:outfile])
 
 if $config.autowire_enable
   AutoWire.new(rm)
+end
+if $config.render_decoder
+  RenderDecoder.new(rm,$options[:outfile])
 end

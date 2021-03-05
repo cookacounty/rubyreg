@@ -1,0 +1,12 @@
+// This decoder is used to quickly write benches to read and write data
+
+// Register declaration
+<% get_outputs("reg").each do |reg| %>
+<%= reg %>;	<% end %>
+
+// Raw register logic
+<% get_registers("wire").each do |reg| %>
+<%= reg %>;<% end %>
+
+
+
