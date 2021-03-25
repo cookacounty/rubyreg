@@ -24,6 +24,8 @@ module <%= $options[:modulename] %>(
 
 );
 
+<% get_registers("wire").each do |reg| %><%= reg %>;<% end %>
+
 // Read Decode A
 always @(*) begin
 	reg_rdat_a = 0;

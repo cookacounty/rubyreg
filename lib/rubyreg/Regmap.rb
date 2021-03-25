@@ -203,7 +203,9 @@ def toint(myin)
 					intnum = Integer(myin)
 				when /^0b[01]+$/
 					intnum = Integer(myin)
-				when /^[0-9]$/
+				when /^0d[0-9]+$/
+					intnum = Integer(myin)
+				when /^[0-9]+$/
 					intnum = Integer(myin)
 				else
 					return false

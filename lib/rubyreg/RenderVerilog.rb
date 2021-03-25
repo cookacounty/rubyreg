@@ -17,24 +17,28 @@ class RenderVerilog
 		case type
 			when "port"
 				@rm.registers.each do |reg|
-					str = "output [#{reg.width-1}:0] #{reg.get_name(:reg)}"
-					str_list << str
+					if reg.type == "reg_port"
+						str = "output [#{reg.width-1}:0] #{reg.get_name(:reg)}"
+						str_list << str
+					end
 				end
 			when "wire"
 				@rm.registers.each do |reg|
-					str = "assign #{reg.get_name(:reg)} = {"
-					reg.bitfields.reverse.each do |bf| 
-						if bf
-							field = bf[:field]
-							str += (field.width > 1) ? "#{field.get_name(:reg)}[#{bf[:idx]}]," :
-							                           "#{field.get_name(:reg)},"
-						else 
-							str += "1'b0,"
+					if reg.type == "reg_port"
+						str = "assign #{reg.get_name(:reg)} = {"
+						reg.bitfields.reverse.each do |bf| 
+							if bf
+								field = bf[:field]
+								str += (field.width > 1) ? "#{field.get_name(:reg)}[#{bf[:idx]}]," :
+								                           "#{field.get_name(:reg)},"
+							else 
+								str += "1'b0,"
+							end
 						end
+						str.chomp!(",")
+						str+="}"
+						str_list << str
 					end
-					str.chomp!(",")
-					str+="}"
-					str_list << str
 				end
 		end
 		str_list
