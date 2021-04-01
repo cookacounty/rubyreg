@@ -73,7 +73,7 @@ class Register
 		sprintf("0x%0#{places}X", @addr) #=> "0A"
 	end
 	def get_name(type)
-		names = {reg: "reg_#{self.addr_hex}"}
+		names = {reg: "reg_#{self.addr_hex}", alias: "#{self.name}"}
 		names[type]		
 	end
 	def assign_bitfields

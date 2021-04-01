@@ -18,7 +18,7 @@ class RenderDecoder
 		case type
 			when "wire"
 				@rm.registers.each do |reg|
-					str = "wire [#{reg.width-1}:0] #{reg.get_name(:reg)}; assign #{reg.get_name(:reg)} = {"
+					str = "wire [#{reg.width-1}:0] #{reg.get_name(:alias)}_val; assign #{reg.get_name(:alias)}_val = {"
 					reg.bitfields.reverse.each do |bf| 
 						if bf
 							field = bf[:field]
@@ -30,6 +30,11 @@ class RenderDecoder
 					end
 					str.chomp!(",")
 					str+="}"
+					str_list << str
+				end
+			when "aliases"
+				@rm.registers.each do |reg|
+					str = "localparam #{reg.get_name(:alias)}=#{reg.addr}"
 					str_list << str
 				end
 		end
