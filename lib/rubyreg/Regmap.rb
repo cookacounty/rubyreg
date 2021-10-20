@@ -38,6 +38,17 @@ class Regmap
 		@registers.each {|reg| reg.assign_bitfields}
 	end
 
+	def run_checks
+		
+		# Redundant addresses
+		addr = registers.map {|r| r.addr}
+		det = addr.detect{ |a| addr.count(a) > 1}
+		if det
+			raise "Redundant addresses found!! Each Register should have a unique address\n Address number(s) (decimal): #{det}"
+		end
+
+	end
+
 end
 
 class Register

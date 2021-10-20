@@ -30,6 +30,8 @@ def load_excel(fname)
 
     rm.assign_bitfields
 
+    rm.run_checks
+
     rm
 
 end
