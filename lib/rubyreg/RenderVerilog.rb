@@ -79,7 +79,7 @@ class RenderVerilog
 
 							case field.type
 								when "rw"    then hold_value = "#{field.get_name(:reg)}"
-								when "w1trg" then hold_value = field.initial_value
+								when "w1trg" then hold_value = initial_str
 							end
 							enable_str = field.wr_enable ? "(#{reg.name}_en && #{field.wr_enable})" :
 							                               "#{reg.name}_en"

@@ -26,26 +26,26 @@ module <%= $options[:modulename] %>(
 
 // Read Decode A
 always @(*) begin
-	reg_rdat_a = 0;
+	reg_rdat_a = 8'b0;
 	case(reg_rd_addr_a) <% @rm.registers.each do |reg| %>
 		<%=reg.addr%>: begin <% get_read_mux(reg).each do |addr_deco|%>
 			reg_rdat_a<%=addr_deco%>;<% end %>
 		end<% end %>
 		default: begin
-			reg_rdat_a = 0;
+			reg_rdat_a = 8'b0;
 		end
 	endcase
 end
 
 // Read Decode B
 always @(*) begin
-	reg_rdat_b = 0;
+	reg_rdat_b = 8'b0;
 	case(reg_rd_addr_b) <% @rm.registers.each do |reg| %>
 		<%=reg.addr%>: begin <% get_read_mux(reg).each do |addr_deco|%>
 			reg_rdat_b<%=addr_deco%>;<% end %>
 		end<% end %>
 		default: begin
-			reg_rdat_b = 0;
+			reg_rdat_b = 8'b0;
 		end
 	endcase
 end
