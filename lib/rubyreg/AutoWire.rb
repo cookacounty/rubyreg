@@ -38,7 +38,7 @@ class AutoWire
 							when :top_ports
 								str << ", output #{field.get_inst_str}  #{field.get_name(:autowire)}" if field.destination == "top"
 							when :top_instantiation
-								str << ", .#{field.get_name(:reg)}(#{field.get_name(:autowire)})" if field.destination == "top"
+								str << ", .#{field.get_name(:reg)}(#{field.get_name(:autowire)})" if field.destination == "top" || field.destination == "top_inst"
 							else
 								raise "Invalid autoroute type #{type.inspect}"
 						end

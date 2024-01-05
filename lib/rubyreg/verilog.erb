@@ -1,19 +1,19 @@
 module <%= $options[:modulename] %>(
 	// Main clock, enable, and reset
-	input              rst_l,
-	input              clk,
-	input              enable,
-	input              sw_rst,
+	input              rst_l
+	,input              clk
+	,input              enable
+	,input              sw_rst
 
 	// Register control
-	input              reg_wr,
-	input        [7:0] reg_rd_addr_a,
-	input        [7:0] reg_rd_addr_b,
-	input        [7:0] reg_wr_addr,
-	input        [7:0] reg_wdat,
-	input        [7:0] reg_mask,
-	output reg   [7:0] reg_rdat_a,
-	output reg   [7:0] reg_rdat_b
+	,input              reg_wr
+	,input        [7:0] reg_rd_addr_a
+        <% if $config.dual_channel %>,input        [7:0] reg_rd_addr_b<% end %>
+        ,input        [7:0] reg_wr_addr
+	,input        [7:0] reg_wdat
+	,input        [7:0] reg_mask
+	,output reg   [7:0] reg_rdat_a
+        <% if $config.dual_channel %>,output reg   [7:0] reg_rdat_b<% end %>
 	<% get_inputs.each do |input| %>
 	,<%= input %><% end %>
 	<% get_outputs("port").each do |output| %>
@@ -37,6 +37,7 @@ always @(*) begin
 	endcase
 end
 
+<% if $config.dual_channel %>
 // Read Decode B
 always @(*) begin
 	reg_rdat_b = 8'b0;
@@ -49,6 +50,7 @@ always @(*) begin
 		end
 	endcase
 end
+<% end %> 
 
 // Address write decode logic
 <% get_address_en.each do |addr| %>
