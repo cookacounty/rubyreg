@@ -32,13 +32,15 @@ class AutoWire
 							when :instantiation
 								str << ", .#{field.get_name(:reg)}(#{field.get_name(:reg)})"
 							when :wires
-								str << "wire #{field.get_inst_str}  #{field.get_name(:reg)};" if field.destination != "top"
+								str << "wire #{field.get_inst_str}  #{field.get_name(:reg)};" if field.destination != "top" && field.destination != "top_inst"  
 							when :ports
-								str << ", output #{field.get_inst_str}  #{field.get_name(:reg)}" if field.destination == "top"
+								str << ", output #{field.get_inst_str}  #{field.get_name(:reg)}" if field.destination == "top" || field.destination == "top_inst" 
 							when :top_ports
 								str << ", output #{field.get_inst_str}  #{field.get_name(:autowire)}" if field.destination == "top"
 							when :top_instantiation
 								str << ", .#{field.get_name(:reg)}(#{field.get_name(:autowire)})" if field.destination == "top" || field.destination == "top_inst"
+							when :top_wires
+								str << "wire #{field.get_inst_str}  #{field.get_name(:autowire)};" if field.destination == "top_inst"  
 							else
 								raise "Invalid autoroute type #{type.inspect}"
 						end
