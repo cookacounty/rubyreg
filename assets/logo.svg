@@ -1,0 +1,71 @@
+<svg width="960" height="300" viewBox="0 0 960 300" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Ruby Reg logo</title>
+  <desc id="desc">A ruby gem shaped circuit mark beside the Ruby Reg wordmark.</desc>
+  <defs>
+    <linearGradient id="ruby" x1="110" y1="44" x2="236" y2="248" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ff5a6a"/>
+      <stop offset="0.48" stop-color="#c81e4f"/>
+      <stop offset="1" stop-color="#741536"/>
+    </linearGradient>
+    <linearGradient id="trace" x1="66" y1="212" x2="278" y2="72" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2de2c6"/>
+      <stop offset="1" stop-color="#79f2ff"/>
+    </linearGradient>
+    <linearGradient id="word" x1="344" y1="82" x2="752" y2="228" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#192334"/>
+      <stop offset="1" stop-color="#48576c"/>
+    </linearGradient>
+    <filter id="shadow" x="38" y="30" width="272" height="246" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="14" stdDeviation="14" flood-color="#111827" flood-opacity="0.20"/>
+    </filter>
+  </defs>
+
+  <rect width="960" height="300" rx="24" fill="#fbfcff"/>
+
+  <g filter="url(#shadow)">
+    <path d="M173 38L262 92L241 213L173 262L72 213L50 92L173 38Z" fill="url(#ruby)"/>
+    <path d="M173 38L207 92H262L173 38Z" fill="#ff8a8f" fill-opacity="0.78"/>
+    <path d="M50 92H139L173 38L50 92Z" fill="#ff6b77" fill-opacity="0.85"/>
+    <path d="M72 213L139 92H50L72 213Z" fill="#b51d45" fill-opacity="0.88"/>
+    <path d="M241 213L207 92H262L241 213Z" fill="#8f173b" fill-opacity="0.82"/>
+    <path d="M72 213H241L173 262L72 213Z" fill="#6f1532" fill-opacity="0.86"/>
+    <path d="M139 92H207L241 213H72L139 92Z" fill="#d72a58"/>
+    <path d="M139 92L173 38L207 92H139Z" fill="#ff3f63"/>
+    <path d="M139 92L173 262L207 92H139Z" fill="#a91642" fill-opacity="0.42"/>
+  </g>
+
+  <g stroke="url(#trace)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M88 184H129V141H170V102H222"/>
+    <path d="M102 211H170V166H230"/>
+    <path d="M126 113H91"/>
+  </g>
+
+  <g fill="#fbfcff">
+    <rect x="148" y="126" width="24" height="24" rx="5"/>
+    <rect x="188" y="126" width="24" height="24" rx="5"/>
+    <rect x="148" y="166" width="24" height="24" rx="5"/>
+    <rect x="188" y="166" width="24" height="24" rx="5"/>
+  </g>
+
+  <g fill="#0f172a">
+    <circle cx="88" cy="184" r="8"/>
+    <circle cx="222" cy="102" r="8"/>
+    <circle cx="230" cy="166" r="8"/>
+    <circle cx="91" cy="113" r="8"/>
+  </g>
+
+  <g>
+    <text x="340" y="138" fill="url(#word)" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="76" font-weight="800" letter-spacing="0">Ruby Reg</text>
+    <text x="344" y="190" fill="#5c6b80" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="26" font-weight="600" letter-spacing="1.5">XLSX TO VERILOG REGISTER MAPS</text>
+    <g stroke="#2de2c6" stroke-width="8" stroke-linecap="round">
+      <path d="M346 216H494"/>
+      <path d="M524 216H672"/>
+      <path d="M702 216H850"/>
+    </g>
+    <g fill="#0f172a">
+      <rect x="494" y="207" width="18" height="18" rx="4"/>
+      <rect x="672" y="207" width="18" height="18" rx="4"/>
+      <rect x="850" y="207" width="18" height="18" rx="4"/>
+    </g>
+  </g>
+</svg>

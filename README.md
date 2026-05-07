@@ -1,5 +1,7 @@
 # Ruby Reg
 
+![Ruby Reg logo](assets/logo.svg)
+
 Ruby Reg is a small Ruby-based Verilog register-map generator. It reads an
 XLSX register description and emits a single flat Verilog register file.
 
