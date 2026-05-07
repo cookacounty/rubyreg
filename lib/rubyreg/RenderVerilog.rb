@@ -45,7 +45,7 @@ class RenderVerilog
 	end
 
 	def get_inputs
-		str_list = Array.new
+		str_list = ["input            cust_access", "input            fact_access"]
 		@rm.registers.each do |reg|
 			reg.fields.each do |field|
 				if field.type == "ro"
@@ -124,7 +124,8 @@ class RenderVerilog
 	def get_address_en()
 		addr_list = Array.new
 		@rm.registers.each do |reg|
-			str = "assign #{reg.name}_en = reg_wr && (reg_wr_addr == #{reg.addr})"
+			access_str = reg.access_signal ? " && #{reg.access_signal}" : ""
+			str = "assign #{reg.name}_en = reg_wr && (reg_wr_addr == #{reg.addr})#{access_str}"
 			addr_list << str
 		end
 		addr_list

@@ -38,10 +38,12 @@ end
 
 
 def parse_row(rm,row)
+	regtype, properties = parse_register_properties(row[2]&.strip)
 	headings = {
 		regname:       row[ 0]&.strip, 
 		regoffset:     row[ 1],
-		regtype:       row[ 2]&.strip, 
+		regtype:       regtype,
+		properties:    properties,
 		name:          row[ 3]&.strip,
 		assignment:    row[ 4],
 		type:          row[ 5]&.strip,
@@ -52,8 +54,19 @@ def parse_row(rm,row)
 
 	if headings[:regname]
 		valid_regtypes = ["reserved","external","reg_port"]
+		valid_properties = ["customer", "factory"]
 
-		raise "Invalid register type name #{headings[:regname]} type #{headings[:regtype]}\n\t#{headings.inspect}" if headings[:regtype] && !(valid_regtypes.member?(headings[:regtype]))
+		if headings[:regtype] && !(valid_regtypes.member?(headings[:regtype]))
+			raise "Invalid register type name #{headings[:regname]} type #{headings[:regtype]}\n\t#{headings.inspect}"
+		end
+		invalid_properties = headings[:properties] - valid_properties
+		if invalid_properties.length > 0
+			raise "Invalid register properties name #{headings[:regname]} properties " \
+			      "#{invalid_properties.join(",")}\n\t#{headings.inspect}"
+		end
+		if (headings[:properties] & valid_properties).length > 1
+			raise "Register #{headings[:regname]} cannot be both customer and factory locked\n\t#{headings.inspect}"
+		end
 		if ["reserved"].member?(headings[:regtype])
 			$ignored_reg = true
 		else
@@ -67,4 +80,15 @@ def parse_row(rm,row)
 		puts "ROW: #{row.join(",")}" if $options[:verbose]
 		rm.addfield(headings)
 	end
+end
+
+def parse_register_properties(regtype)
+	return [nil, []] if !regtype || regtype.empty?
+
+	tokens = regtype.split(/[,\s]+/).reject(&:empty?).map(&:downcase)
+	base_types = ["reserved", "external", "reg_port"]
+	base_type = tokens.find { |token| base_types.member?(token) }
+	properties = tokens - [base_type]
+
+	[base_type, properties]
 end

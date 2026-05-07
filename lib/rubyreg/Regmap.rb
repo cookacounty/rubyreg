@@ -59,6 +59,7 @@ class Register
 	attr_accessor :width
 	attr_accessor :bitfields
 	attr_accessor :type
+	attr_accessor :properties
 
 	def initialize(rm: [], addr: 0, headings: [])
 		@rm=rm
@@ -66,6 +67,7 @@ class Register
 		@fields = Array.new
 		@width = $config.register_width
 		@type = headings[:regtype]
+		@properties = headings[:properties] || []
 
 		name = headings[:regname]
 		name.strip!
@@ -86,6 +88,11 @@ class Register
 	def get_name(type)
 		names = {reg: "reg_#{self.addr_hex}", alias: "#{self.name}"}
 		names[type]		
+	end
+	def access_signal
+		return "cust_access" if @properties.member?("customer")
+		return "fact_access" if @properties.member?("factory")
+		nil
 	end
 	def assign_bitfields
 		bitfields = Array.new(@width)

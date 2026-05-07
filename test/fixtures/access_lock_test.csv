@@ -1,0 +1,11 @@
+regname,regoffset,properties,name,assignment,type,initial_value,description,wr_enable,unused,destination
+plain_reg,0x00,,plain_rw,0,rw,0,Plain software register,,,
+cust_reg,0x01,customer,cust_rw,0,rw,0,Customer locked register,,,
+fact_reg,0x02,factory,fact_rw,0,rw,0,Factory locked register,,,
+comma_cust_reg,0x03,"reg_port,customer",comma_cust_ro,0,ro,0,Comma separated reg_port customer lock,,,
+space_fact_reg,0x04,reg_port factory,space_fact_rw,0,rw,0,Space separated reg_port factory lock,,,
+hw_reg,0x05,customer,hw_field,0,hwrw,0,Customer locked hwrw register,,,
+external_reg,0x06,"external, FACTORY",external_ro,0,rw,0,Factory locked external register,,,
+we_reg,0x07,customer,we_field,0,rw,0,Customer locked register with field write enable,field_we,,
+trig_reg,0x08,factory,trig_field,0,w1trg,0,Factory locked trigger register,,,
+ignored_reg,0x09,reserved customer,ignored_field,0,rw,0,Reserved register should be ignored,,,
