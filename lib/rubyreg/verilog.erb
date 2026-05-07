@@ -29,9 +29,7 @@ always @(*) begin
 	reg_rdat_a = 8'b0;
 	case(reg_rd_addr_a) <% @rm.registers.each do |reg| %>
 		<%=reg.addr%>: begin <% if reg.access_signal %>
-			if (<%= reg.access_signal %>) begin <% get_read_mux(reg).each do |addr_deco|%>
-				reg_rdat_a<%=addr_deco%>;<% end %>
-			end<% else %><% get_read_mux(reg).each do |addr_deco|%>
+			if (<%= reg.access_signal %>) begin <%= get_read_mux_line(reg, "reg_rdat_a") %> end<% else %><% get_read_mux(reg).each do |addr_deco|%>
 			reg_rdat_a<%=addr_deco%>;<% end %><% end %>
 		end<% end %>
 		default: begin
@@ -46,9 +44,7 @@ always @(*) begin
 	reg_rdat_b = 8'b0;
 	case(reg_rd_addr_b) <% @rm.registers.each do |reg| %>
 		<%=reg.addr%>: begin <% if reg.access_signal %>
-			if (<%= reg.access_signal %>) begin <% get_read_mux(reg).each do |addr_deco|%>
-				reg_rdat_b<%=addr_deco%>;<% end %>
-			end<% else %><% get_read_mux(reg).each do |addr_deco|%>
+			if (<%= reg.access_signal %>) begin <%= get_read_mux_line(reg, "reg_rdat_b") %> end<% else %><% get_read_mux(reg).each do |addr_deco|%>
 			reg_rdat_b<%=addr_deco%>;<% end %><% end %>
 		end<% end %>
 		default: begin

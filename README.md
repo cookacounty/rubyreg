@@ -162,9 +162,7 @@ Representative generated read mux:
 
 ```verilog
 1: begin
-  if (cust_access) begin
-    reg_rdat_a[0]= r_cust_rw;
-  end
+  if (cust_access) begin reg_rdat_a[0]= r_cust_rw; end
 end
 ```
 
@@ -188,9 +186,7 @@ Representative generated read mux:
 
 ```verilog
 2: begin
-  if (fact_access) begin
-    reg_rdat_a[0]= r_fact_rw;
-  end
+  if (fact_access) begin reg_rdat_a[0]= r_fact_rw; end
 end
 ```
 

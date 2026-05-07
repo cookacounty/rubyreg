@@ -121,6 +121,10 @@ class RenderVerilog
 		str_list
 	end
 
+	def get_read_mux_line(reg, rdat)
+		get_read_mux(reg).map { |addr_deco| "#{rdat}#{addr_deco};" }.join(" ")
+	end
+
 	def get_address_en()
 		addr_list = Array.new
 		@rm.registers.each do |reg|

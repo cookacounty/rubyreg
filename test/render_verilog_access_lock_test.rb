@@ -69,6 +69,7 @@ class RenderVerilogAccessLockTest < Minitest::Test
 
   def test_customer_register_reads_and_writes_are_gated
     assert_equal 8, @verilog.scan("if (cust_access) begin").length
+    assert_includes @verilog, "if (cust_access) begin reg_rdat_a[0]= r_cust_rw; end"
     assert_includes @verilog, "assign cust_reg_en = reg_wr && (reg_wr_addr == 1) && cust_access;"
     assert_includes @verilog, "assign comma_cust_reg_en = reg_wr && (reg_wr_addr == 3) && cust_access;"
     assert_includes @verilog, "assign we_reg_en = reg_wr && (reg_wr_addr == 7) && cust_access;"
@@ -77,6 +78,8 @@ class RenderVerilogAccessLockTest < Minitest::Test
 
   def test_factory_register_reads_and_writes_are_gated
     assert_equal 8, @verilog.scan("if (fact_access) begin").length
+    assert_includes @verilog, "if (fact_access) begin reg_rdat_a[0]= r_fact_rw; end"
+    assert_includes @verilog, "if (fact_access) begin reg_rdat_b[0]= r_fact_rw; end"
     assert_includes @verilog, "assign fact_reg_en = reg_wr && (reg_wr_addr == 2) && fact_access;"
     assert_includes @verilog, "assign space_fact_reg_en = reg_wr && (reg_wr_addr == 4) && fact_access;"
     assert_includes @verilog, "assign trig_reg_en = reg_wr && (reg_wr_addr == 8) && fact_access;"
