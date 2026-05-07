@@ -140,7 +140,7 @@ class RegisterField
 	end
 	def check_type(type)
 		if type
-			["rw","ro","w1trg","reserved"].member?(type.strip)
+			["rw","ro","w1trg","hwrw","reserved"].member?(type.strip)
 		else
 			nil
 		end

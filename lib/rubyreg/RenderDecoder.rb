@@ -45,7 +45,7 @@ class RenderDecoder
 		str_list = Array.new
 		@rm.registers.each do |reg|
 			reg.fields.each do |field|
-				if ["w1trg","rw","ro"].member?(field.type)
+				if ["w1trg","rw","ro","hwrw"].member?(field.type)
 					idx = field.get_idx_str
 					initial_str = "#{field.width}'d#{field.initial_value}"
 					case type

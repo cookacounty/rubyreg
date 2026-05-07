@@ -30,19 +30,64 @@ class AutoWire
 					reg.fields.each do |field|				
 						case type
 							when :instantiation
-								str << "      , .#{field.get_name(:reg)}(#{field.get_name(:reg)})"
+                                if field.type == "hwrw" 
+                                    str << "      ,.#{field.get_name(:autowire)}_hw_wr(#{field.get_name(:autowire)}_hw_wr)"
+                                    str << "      ,.#{field.get_name(:autowire)}_hw_val(#{field.get_name(:autowire)}_hw_val)"
+                                end
+								str << "      ,.#{field.get_name(:reg)}(#{field.get_name(:reg)})"
 							when :wires
-								str << "   logic #{field.get_inst_str}  #{field.get_name(:reg)};" if field.destination != "top" && field.destination != "top_inst"  
+                                if field.type == "hwrw" 
+					                str << "   logic       #{field.get_name(:autowire)}_hw_wr;"
+                                    if field.width == 1
+                                        str << "   logic       #{field.get_name(:autowire)}_hw_val;" 
+                                    else
+					                    str << "   logic #{field.get_inst_str} #{field.get_name(:autowire)}_hw_val;" 
+                                    end
+                                end
+                                if (field.destination != "top" && field.destination != "top_inst") 
+                                    if field.width == 1
+								        str << "   logic       #{field.get_name(:reg)};" 
+                                    else
+								        str << "   logic #{field.get_inst_str} #{field.get_name(:reg)};" 
+                                    end
+                                end
 							when :ports
-								str << "   , output #{field.get_inst_str}  #{field.get_name(:reg)}" if field.type != "ro" && (field.destination == "top" || field.destination == "top_inst") 
-								str << "   , input  #{field.get_inst_str}  #{field.get_name(:reg)}" if field.type == "ro" && (field.destination == "top" || field.destination == "top_inst") 
+                                if (field.destination == "top" || field.destination == "top_inst") 
+                                    if field.width == 1
+								        str << "   ,output       #{field.get_name(:reg)}" if field.type != "ro"   
+								        str << "   ,input        #{field.get_name(:reg)}" if field.type == "ro"  
+                                    else
+								        str << "   ,output #{field.get_inst_str} #{field.get_name(:reg)}" if field.type != "ro"   
+								        str << "   ,input  #{field.get_inst_str} #{field.get_name(:reg)}" if field.type == "ro"  
+                                    end
+                                end
 							when :top_ports
-								str << "   , output #{field.get_inst_str}  #{field.get_name(:autowire)}" if field.type != "ro" && field.destination == "top"
-								str << "   , input  #{field.get_inst_str}  #{field.get_name(:autowire)}" if field.type == "ro" && field.destination == "top"
+                                if (field.type != "ro" && field.destination == "top")
+                                    if field.width == 1
+								        str << "   ,output       #{field.get_name(:autowire)}" 
+                                    else
+								        str << "   ,output #{field.get_inst_str} #{field.get_name(:autowire)}" 
+                                    end
+                                end
+                                if (field.type == "ro" && field.destination == "top")
+                                    if field.width == 1
+								        str << "   ,input        #{field.get_name(:autowire)}" 
+                                    else
+								        str << "   ,input  #{field.get_inst_str} #{field.get_name(:autowire)}" 
+                                    end
+                                end
 							when :top_instantiation
-								str << "      , .#{field.get_name(:reg)}(#{field.get_name(:autowire)})" if field.destination == "top" || field.destination == "top_inst"
+                                if (field.destination == "top" || field.destination == "top_inst")
+								    str << "      ,.#{field.get_name(:reg)}(#{field.get_name(:autowire)})" 
+                                end
 							when :top_wires
-								str << "   logic #{field.get_inst_str}  #{field.get_name(:autowire)};" if field.destination == "top_inst"  
+                                if field.destination == "top_inst"
+                                    if field.width == 1
+								        str << "   logic       #{field.get_name(:autowire)};"   
+                                    else
+								        str << "   logic #{field.get_inst_str} #{field.get_name(:autowire)};"   
+                                    end
+                                end
 							else
 								raise "Invalid autoroute type #{type.inspect}"
 						end
@@ -50,9 +95,9 @@ class AutoWire
 				end
 		end
 
-		str_final = ["   // -> Start AutoRoute #{type}"]
+		str_final = ["      // -> Start AutoRoute #{type}"]
 		str_final << str
-		str_final << "   // <- End AutoRoute #{type}"
+		str_final << "      // <- End AutoRoute #{type}"
 		str_final.join("\n")
 	end
 

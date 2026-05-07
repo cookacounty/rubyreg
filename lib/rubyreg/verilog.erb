@@ -9,7 +9,7 @@ module <%= $options[:modulename] %>(
 	,input              reg_wr
 	,input        [7:0] reg_rd_addr_a
         <% if $config.dual_channel %>,input        [7:0] reg_rd_addr_b<% end %>
-        ,input        [7:0] reg_wr_addr
+    ,input        [7:0] reg_wr_addr
 	,input        [7:0] reg_wdat
 	,input        [7:0] reg_mask
 	,output reg   [7:0] reg_rdat_a
@@ -64,11 +64,13 @@ end
 <% get_outputs("wire").each do |reg| %>
 <%= reg %>;<% end %>
 
+wire enable_int = enable<% get_outputs("enable").each do |reg| %><%= reg %><% end %>;
+
 // Registers
 always@(posedge clk or negedge rst_l) begin
 	if (!rst_l) begin <% get_outputs("reset").each do |reg| %>
 		<%= reg %>;	<% end %>
-	end else if (enable) begin<% get_outputs("active").each do |reg| %>
+	end else if (enable_int) begin<% get_outputs("active").each do |reg| %>
 		<%= reg %>;	<% end %>
 	end
 end

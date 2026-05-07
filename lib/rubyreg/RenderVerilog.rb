@@ -49,8 +49,15 @@ class RenderVerilog
 		@rm.registers.each do |reg|
 			reg.fields.each do |field|
 				if field.type == "ro"
-					str = (field.width==1)? "input #{field.get_name(:reg)}" :
-					                        "input #{field.get_inst_str} #{field.get_name(:reg)}"
+					str = (field.width==1) ? "input            #{field.get_name(:reg)}" :
+					                         "input      #{field.get_inst_str} #{field.get_name(:reg)}"
+					str_list << str
+				end
+				if field.type == "hwrw"
+					str = "input            #{field.get_name(:autowire)}_hw_wr"
+					str_list << str
+					str = (field.width==1) ? "input            #{field.get_name(:autowire)}_hw_val" :
+					                         "input      #{field.get_inst_str} #{field.get_name(:autowire)}_hw_val"
 					str_list << str
 				end
 			end
@@ -62,12 +69,12 @@ class RenderVerilog
 		str_list = Array.new
 		@rm.registers.each do |reg|
 			reg.fields.each do |field|
-				if ["w1trg","rw"].member?(field.type)
+				if ["w1trg","rw","hwrw"].member?(field.type)
 					idx = field.get_idx_str
 					initial_str = "#{field.width}'d#{field.initial_value}"
 					case type
 						when "port"
-							str = (field.width ==1 ) ? "output reg #{field.get_name(:reg)}" :
+							str = (field.width ==1 ) ? "output reg       #{field.get_name(:reg)}" :
 							                           "output reg #{field.get_inst_str} #{field.get_name(:reg)}"
 						when "reg"
 							str = "reg #{field.get_inst_str} #{field.get_name(:reg)}"
@@ -79,11 +86,21 @@ class RenderVerilog
 
 							case field.type
 								when "rw"    then hold_value = "#{field.get_name(:reg)}"
+								when "hwrw"  then hold_value = "#{field.get_name(:reg)}"
 								when "w1trg" then hold_value = initial_str
 							end
-							enable_str = field.wr_enable ? "(#{reg.name}_en && #{field.wr_enable})" :
-							                               "#{reg.name}_en"
-							str = "wire #{field.get_inst_str} #{field.get_name(:next)} = sw_rst ? #{initial_str} : #{enable_str} ? ((~reg_mask[#{idx}] & reg_wdat[#{idx}]) | (reg_mask[#{idx}] & #{field.get_name(:reg)})) : #{hold_value}"
+							enable_str = field.wr_enable ? "(#{reg.name}_en && #{field.wr_enable})" : "#{reg.name}_en"
+					        nxt_str = "#{enable_str} ? ((~reg_mask[#{idx}] & reg_wdat[#{idx}]) | (reg_mask[#{idx}] & #{field.get_name(:reg)})) : #{hold_value}"
+                            if field.type == "hwrw" 
+                                hw_val_str = "#{field.get_name(:autowire)}_hw_wr ? #{field.get_name(:autowire)}_hw_val"
+                                str = "wire #{field.get_inst_str} #{field.get_name(:next)} = sw_rst ? #{initial_str} : #{hw_val_str} : (#{nxt_str})"
+                            else
+                                str = "wire #{field.get_inst_str} #{field.get_name(:next)} = sw_rst ? #{initial_str} : #{nxt_str}"
+                            end
+						when "enable"
+                            if field.type == "hwrw" 
+                              str = " | #{field.get_name(:autowire)}_hw_wr"
+                            end
 						when "active"
 							str    = "#{field.get_name(:reg)} <= #{field.get_name(:next)}"   
 					end
